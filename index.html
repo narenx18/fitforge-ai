@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FitForge AI - Black & Gold Luxury Edition</title>
+  
+  <!-- High-End Luxury Typography: Cinzel, Playfair Display & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+  <!-- MediaPipe Pose and Camera Utils from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+
+  <style>
+    /* ==========================================================================
+       Black & Gold Luxury Design System
+       ========================================================================== */
+    :root {
+      /* Backgrounds */
+      --bg-primary: #0a0a0c;        /* Obsidian Black */
+      --bg-secondary: #121216;      /* Rich Metallic Black */
+      --bg-card: #18181f;           /* Dark Titanium */
+      --bg-card-elevated: #202029;   /* Polished Dark Titanium */
+      --bg-glass: rgba(24, 24, 31, 0.72);
+      
+      /* Borders & Gold Reflective Highlights */
+      --border-gold-subtle: rgba(212, 175, 55, 0.22);
+      --border-gold-strong: rgba(212, 175, 55, 0.6);
+      --border-card: rgba(255, 255, 255, 0.07);
+
+      /* Metallic Golds Palette */
+      --gold-primary: #d4af37;      /* Classic Metallic Gold */
+      --gold-light: #f3e5ab;        /* Champagne Gold Highlight */
+      --gold-dark: #aa7c11;         /* Burnished Gold */
+      --gold-gradient: linear-gradient(135deg, #f5d78a 0%, #d4af37 50%, #997312 100%);
+      --gold-gradient-text: linear-gradient(135deg, #fff2b2 0%, #d4af37 50%, #aa7c11 100%);
+      --gold-glow: rgba(212, 175, 55, 0.35);
+
+      /* Streak Grading - Radiant Amber / Fire Gold */
+      --streak-fire: #ff6b35;
+      --streak-fire-dark: #cc4d1f;
+      --streak-glow: rgba(255, 107, 53, 0.35);
+
+      /* Interactive Buttons & States */
+      --btn-primary: linear-gradient(135deg, #f5d78a 0%, #d4af37 50%, #997312 100%);
+      --btn-hover: linear-gradient(135deg, #fff3c4 0%, #e6c875 50%, #b3881b 100%);
+      --btn-accent-emerald: #10b981; /* Emerald Gold */
+      --emerald-glow: rgba(16, 185, 129, 0.4);
+      --red-accent: #e11d48;
+
+      /* Typography Colors */
+      --text-main: #f5f5f7;         /* Crisp Warm White */
+      --text-secondary: #d1d1d6;   /* Platinum Gray */
+      --text-muted: #a1a1aa;        /* Muted Titanium Gray */
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 500;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(212, 175, 55, 0.07) 0%, transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(255, 107, 53, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(18, 18, 22, 0.9) 0%, transparent 100%);
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-gold-subtle);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--gold-primary);
+    }
+
+    /* ==========================================================================
+       Header & High-End Navigation
+       ========================================================================== */
+    header {
+      background: rgba(18, 18, 22, 0.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-gold-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      padding: 0.9rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.7);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(24, 24, 31, 0.9) 100%);
+      border: 1.5px solid var(--gold-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px var(--gold-glow);
+    }
+
+    .brand-icon svg {
+      width: 22px;
+      height: 22px;
+      fill: url(#goldGradientSvg);
+    }
+
+    .brand-title {
+      font-family: 'Cinzel', serif;
+      font-weight: 900;
+      font-size: 1.4rem;
+      letter-spacing: 2.5px;
+      color: var(--text-main);
+    }
+
+    .brand-title span {
+      background: var(--gold-gradient-text);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 900;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      background: var(--bg-secondary);
+      padding: 5px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-card);
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: 'Cinzel', serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 9px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      letter-spacing: 1px;
+    }
+
+    .nav-btn:hover {
+      color: var(--gold-light);
+      background: rgba(212, 175, 55, 0.08);
+    }
+
+    .nav-btn.active {
+      background: var(--gold-gradient);
+      color: #0a0a0c;
+      font-weight: 900;
+      box-shadow: 0 0 20px var(--gold-glow);
+    }
+
+    .header-badges {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Radiant Amber / Fire Gold Workout Streak Badge */
+    .streak-badge {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: linear-gradient(135deg, rgba(255, 107, 53, 0.16) 0%, rgba(18, 18, 22, 0.9) 100%);
+      border: 1.5px solid var(--streak-fire);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      box-shadow: 0 0 16px var(--streak-glow);
+      animation: streakPulse 2.4s infinite ease-in-out;
+    }
+
+    @keyframes streakPulse {
+      0%, 100% { box-shadow: 0 0 12px var(--streak-glow); }
+      50% { box-shadow: 0 0 22px rgba(255, 107, 53, 0.6); }
+    }
+
+    .streak-flame {
+      font-size: 1.1rem;
+      line-height: 1;
+      filter: drop-shadow(0 0 6px rgba(255, 107, 53, 0.8));
+    }
+
+    .streak-text {
+      font-family: 'Cinzel', serif;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--streak-fire);
+      letter-spacing: 1px;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(212, 175, 55, 0.1);
+      border: 1.5px solid var(--border-gold-subtle);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-family: 'Cinzel', serif;
+      font-size: 0.78rem;
+      color: var(--gold-light);
+      letter-spacing: 1px;
+    }
+
+    /* ==========================================================================
+       Container & Card Foundations
+       ========================================================================== */
+    .app-container {
+      max-width: 1320px;
+      margin: 2rem auto;
+      padding: 0 1.5rem 4rem 1.5rem;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: tabFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes tabFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Glassmorphic Luxury Card */
+    .luxury-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-gold-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.8rem;
+      margin-bottom: 1.8rem;
+      position: relative;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(12px);
+      transition: border-color 0.3s ease;
+    }
+
+    .luxury-card:hover {
+      border-color: rgba(212, 175, 55, 0.38);
+    }
+
+    .luxury-card.glow-gold {
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 30px rgba(212, 175, 55, 0.15), 0 10px 40px rgba(0, 0, 0, 0.7);
+    }
+
+    .card-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .card-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--gold-light);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 1.5px;
+    }
+
+    .card-title-gold {
+      background: var(--gold-gradient-text);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ==========================================================================
+       Interactive Buttons with Color Grading
+       ========================================================================== */
+    .cyber-btn {
+      background: var(--btn-primary);
+      color: #0a0a0c;
+      border: none;
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      font-weight: 900;
+      padding: 12px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: 1.2px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 18px rgba(212, 175, 55, 0.3);
+    }
+
+    .cyber-btn:hover {
+      background: var(--btn-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 26px rgba(212, 175, 55, 0.5);
+    }
+
+    .cyber-btn.btn-secondary {
+      background: var(--bg-card-elevated);
+      color: var(--gold-light);
+      border: 1px solid var(--border-gold-subtle);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    }
+
+    .cyber-btn.btn-secondary:hover {
+      background: rgba(212, 175, 55, 0.15);
+      border-color: var(--gold-primary);
+      color: #ffffff;
+      box-shadow: 0 0 20px var(--gold-glow);
+    }
+
+    .cyber-btn.btn-emerald {
+      background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #059669 100%);
+      color: #032b1a;
+      box-shadow: 0 4px 18px var(--emerald-glow);
+    }
+
+    .cyber-btn.btn-emerald:hover {
+      box-shadow: 0 6px 26px rgba(16, 185, 129, 0.6);
+    }
+
+    .cyber-btn.btn-red {
+      background: linear-gradient(135deg, #f43f5e 0%, #e11d48 50%, #9f1239 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 18px rgba(225, 29, 72, 0.35);
+    }
+
+    /* Camera Active High-Energy Gold Pulse Effect */
+    .btn-camera-active {
+      background: linear-gradient(135deg, #fff3c4 0%, #d4af37 50%, #aa7c11 100%) !important;
+      animation: goldPulse 1.8s infinite ease-in-out;
+    }
+
+    @keyframes goldPulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 16px rgba(212, 175, 55, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
+      }
+    }
+
+    /* ==========================================================================
+       Telemetry Grids & Progress Sliders
+       ========================================================================== */
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.2rem;
+      margin-top: 1rem;
+    }
+
+    .telemetry-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-gold-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .telemetry-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--gold-gradient);
+      opacity: 0.6;
+    }
+
+    .telemetry-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .telemetry-val {
+      font-family: 'Cinzel', serif;
+      font-size: 1.7rem;
+      font-weight: 900;
+      color: var(--gold-light);
+    }
+
+    .gold-track {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .gold-fill {
+      height: 100%;
+      background: var(--gold-gradient);
+      width: 0%;
+      border-radius: var(--radius-full);
+      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 0 10px var(--gold-glow);
+    }
+
+    /* ==========================================================================
+       AI Motion Tracking Stage & Viewport
+       ========================================================================== */
+    .workout-stage {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 1.8rem;
+    }
+
+    @media (max-width: 960px) {
+      .workout-stage {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .camera-container {
+      background: #000000;
+      border: 2px solid var(--gold-primary);
+      border-radius: var(--radius-lg);
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      box-shadow: 0 0 35px rgba(212, 175, 55, 0.2), 0 10px 30px rgba(0, 0, 0, 0.8);
+    }
+
+    video#webcam {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+    }
+
+    canvas#poseCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transform: scaleX(-1);
+    }
+
+    /* Completed Rep Ring Flash Animation */
+    @keyframes repFlashAnim {
+      0% {
+        box-shadow: inset 0 0 0 0 rgba(243, 229, 171, 0.9), 0 0 40px rgba(243, 229, 171, 0.8);
+      }
+      100% {
+        box-shadow: inset 0 0 50px 0 rgba(243, 229, 171, 0), 0 0 0 0 rgba(243, 229, 171, 0);
+      }
+    }
+
+    .rep-flash {
+      animation: repFlashAnim 0.6s ease-out;
+    }
+
+    /* HUD Overlays */
+    .hud-overlay {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .hud-pill {
+      background: rgba(18, 18, 22, 0.88);
+      border: 1px solid var(--gold-primary);
+      border-radius: var(--radius-md);
+      padding: 7px 16px;
+      backdrop-filter: blur(10px);
+      font-family: 'Cinzel', serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--gold-light);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+    }
+
+    .hud-feedback {
+      position: absolute;
+      bottom: 22px;
+      left: 22px;
+      right: 22px;
+      background: rgba(18, 18, 22, 0.92);
+      border: 2px solid var(--gold-primary);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      text-align: center;
+      font-family: 'Cinzel', serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--gold-light);
+      text-shadow: 0 0 12px var(--gold-glow);
+      pointer-events: none;
+      z-index: 10;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s;
+    }
+
+    .hud-feedback.emerald {
+      border-color: var(--btn-accent-emerald);
+      color: #34d399;
+      text-shadow: 0 0 14px var(--emerald-glow);
+    }
+
+    .rep-display {
+      background: var(--bg-card);
+      border: 1px solid var(--border-gold-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.3rem;
+    }
+
+    .counter-huge {
+      font-family: 'Cinzel', serif;
+      font-size: 5rem;
+      font-weight: 900;
+      color: var(--gold-light);
+      text-align: center;
+      line-height: 1;
+      text-shadow: 0 0 35px var(--gold-glow);
+      background: var(--gold-gradient-text);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Form Controls */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.3rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    .cyber-input, .cyber-select {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-gold-subtle);
+      border-radius: 10px;
+      padding: 11px 16px;
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+
+    .cyber-input:focus, .cyber-select:focus {
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 16px var(--gold-glow);
+    }
+
+    /* Diet / Meal Blueprint Cards */
+    .meals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.4rem;
+      margin-top: 1.2rem;
+    }
+
+    .meal-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-gold-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.4rem;
+      position: relative;
+      transition: transform 0.25s, border-color 0.25s;
+    }
+
+    .meal-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(212, 175, 55, 0.45);
+    }
+
+    .meal-type {
+      font-family: 'Cinzel', serif;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--gold-primary);
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+    }
+
+    .meal-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 10px;
+    }
+
+    .meal-macros {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      border-top: 1px dashed rgba(212, 175, 55, 0.2);
+      padding-top: 10px;
+    }
+
+    .food-tracker-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: var(--bg-secondary);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 0.92rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hidden SVG Def for Brand Icon -->
+  <svg style="display: none;">
+    <defs>
+      <linearGradient id="goldGradientSvg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#fff2b2" />
+        <stop offset="50%" stop-color="#d4af37" />
+        <stop offset="100%" stop-color="#aa7c11" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- Top Luxury Header Navigation -->
+  <header>
+    <div class="brand" onclick="switchTab('dashboard')">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+      </div>
+      <div class="brand-title">FITFORGE <span>AI</span></div>
+    </div>
+
+    <nav class="nav-tabs">
+      <button class="nav-btn active" onclick="switchTab('dashboard')" id="tabBtn-dashboard">📊 Overview</button>
+      <button class="nav-btn" onclick="switchTab('motion')" id="tabBtn-motion">🏋️ AI Kinematics</button>
+      <button class="nav-btn" onclick="switchTab('nutrition')" id="tabBtn-nutrition">🥗 Nutrition Blueprint</button>
+      <button class="nav-btn" onclick="switchTab('profile')" id="tabBtn-profile">👤 Gladiator Profile</button>
+    </nav>
+
+    <div class="header-badges">
+      <!-- Radiant Amber/Fire Gold Streak Counter -->
+      <div class="streak-badge">
+        <span class="streak-flame">🔥</span>
+        <span class="streak-text"><span id="headerStreak">7</span>D STREAK</span>
+      </div>
+
+      <!-- Experience Badge -->
+      <div class="user-pill" id="userHeaderBadge">
+        👑 LVL <span id="headerLevel">1</span> // <span id="headerXp">0</span> XP
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Multi-Tab SPA Application -->
+  <main class="app-container">
+
+    <!-- ======================================================= -->
+    <!-- TAB 1: DASHBOARD & XP OVERVIEW                          -->
+    <!-- ======================================================= -->
+    <div class="tab-content active" id="tab-dashboard">
+      <div class="luxury-card glow-gold">
+        <div class="card-header-row">
+          <div>
+            <div style="font-size: 0.8rem; color: var(--gold-primary); letter-spacing: 1.5px; font-family: 'Cinzel', serif;">TITANIUM GLADIATOR CALLSIGN</div>
+            <h2 id="dashUsername" style="font-family: 'Cinzel', serif; font-size: 2.2rem; font-weight: 900; color: var(--text-main); margin-top: 4px;">Alex Mercer</h2>
+            <div style="font-size: 0.95rem; color: var(--text-muted); margin-top: 4px;" id="dashGoal">Primary Protocol: Muscle Mass Gain</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 0.8rem; color: var(--gold-primary); font-family: 'Cinzel', serif; letter-spacing: 1.5px;">ROYAL COMBAT RANK</div>
+            <div id="dashRank" style="font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 900; background: var(--gold-gradient-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">LEVEL 1 // FORGE TITAN</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.8rem;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 8px;">
+            <span style="color: var(--text-muted); font-family: 'Cinzel', serif; letter-spacing: 1px;">KINETIC EXPERIENCE REPUTATION</span>
+            <span style="color: var(--gold-light); font-family: 'Cinzel', serif; font-weight: 700;"><span id="dashCurrentXp">0</span> / <span id="dashNextXp">300</span> XP</span>
+          </div>
+          <div class="gold-track">
+            <div class="gold-fill" id="dashXpBar" style="width: 0%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Telemetry Highlights Grid -->
+      <div class="telemetry-grid">
+        <div class="telemetry-box">
+          <div class="telemetry-label">LIFETIME SQUATS</div>
+          <div class="telemetry-val" id="statSquats">0</div>
+        </div>
+        <div class="telemetry-box">
+          <div class="telemetry-label">TITAN PUSH-UPS</div>
+          <div class="telemetry-val" id="statPushups">0</div>
+        </div>
+        <div class="telemetry-box">
+          <div class="telemetry-label">JUMPING JACKS</div>
+          <div class="telemetry-val" id="statJacks">0</div>
+        </div>
+        <div class="telemetry-box">
+          <div class="telemetry-label">CALORIC WORK</div>
+          <div class="telemetry-val" id="statCalories">0 kcal</div>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div style="display: flex; gap: 1.2rem; margin-top: 2rem; flex-wrap: wrap;">
+        <button class="cyber-btn" onclick="switchTab('motion')">⚡ LAUNCH REAL-TIME MOTION CAMERA</button>
+        <button class="cyber-btn btn-secondary" onclick="switchTab('nutrition')">🥗 VIEW CUSTOM NUTRITION PLAN</button>
+      </div>
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- TAB 2: AI MOTION TRACKING & CAMERA KINEMATICS           -->
+    <!-- ======================================================= -->
+    <div class="tab-content" id="tab-motion">
+      <div class="luxury-card glow-gold">
+        <div class="card-header-row" style="margin-bottom: 1.4rem;">
+          <div class="card-title card-title-gold">⚡ REAL-TIME COMPUTER VISION POSE DETECTOR</div>
+          <div style="display: flex; gap: 10px;">
+            <select class="cyber-select" id="exerciseSelect" onchange="changeExercise(this.value)">
+              <option value="squat">Forge Squats (Hip-Knee-Ankle)</option>
+              <option value="pushup">Titan Push-ups (Elbow-Shoulder)</option>
+              <option value="jumping_jack">Hyper Jumping Jacks (Full-Body)</option>
+            </select>
+            <button class="cyber-btn" id="startCamBtn" onclick="toggleCamera()">INITIALIZE WEBCAM</button>
+          </div>
+        </div>
+
+        <div class="workout-stage">
+          <!-- Webcam Mirror & Canvas Stage with Gold Flash Overlay -->
+          <div class="camera-container" id="cameraContainer">
+            <video id="webcam" playsinline muted autoplay></video>
+            <canvas id="poseCanvas"></canvas>
+
+            <!-- Floating Cyber HUDs -->
+            <div class="hud-overlay">
+              <div class="hud-pill" id="angleHud">ANGLE: --°</div>
+              <div class="hud-pill" id="stateHud" style="border-color: var(--btn-accent-emerald); color: var(--btn-accent-emerald);">STATE: STANDING</div>
+            </div>
+
+            <div class="hud-feedback" id="feedbackHud">STAND IN SIGHT OF CAMERA SENSORS</div>
+          </div>
+
+          <!-- Rep Counter & Analytics Panel -->
+          <div class="rep-display">
+            <div>
+              <div style="font-size: 0.8rem; color: var(--gold-primary); text-align: center; letter-spacing: 1.5px; font-family: 'Cinzel', serif;">TARGET EXERCISE</div>
+              <div id="activeExerciseTitle" style="font-family: 'Cinzel', serif; font-size: 1.35rem; font-weight: 800; color: var(--text-main); text-align: center; margin-top: 4px;">Forge Squats</div>
+            </div>
+
+            <div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center; letter-spacing: 1.5px; font-family: 'Cinzel', serif;">VALID REPETITIONS</div>
+              <div class="counter-huge" id="repCounter">0</div>
+            </div>
+
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 6px;">
+                <span style="font-family: 'Cinzel', serif;">REP DEPTH ACCURACY</span>
+                <span id="depthPercent" style="color: var(--gold-light); font-weight: 700;">0%</span>
+              </div>
+              <div class="gold-track">
+                <div class="gold-fill" id="depthBar" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--border-gold-subtle); padding-top: 1.2rem;">
+              <div style="font-size: 0.82rem; color: var(--text-muted);">WORKOUT TIME: <span id="sessionTimer" style="color: var(--text-main); font-family: 'Share Tech Mono';">00:00</span></div>
+              <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 5px;">SESSION GAIN: <span id="sessionXpGained" style="color: var(--gold-light); font-weight: 700;">+0 XP</span></div>
+            </div>
+
+            <button class="cyber-btn btn-emerald" onclick="finishExerciseSession()">FINISH & CLAIM XP</button>
+            <button class="cyber-btn btn-secondary" onclick="runSimulatedRep()" style="padding: 10px 14px; font-size: 0.78rem;">🤖 SIMULATE COMPLETED REP</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- TAB 3: DYNAMIC DIET & NUTRITION ENGINE                  -->
+    <!-- ======================================================= -->
+    <div class="tab-content" id="tab-nutrition">
+      <div class="luxury-card glow-gold">
+        <div class="card-title card-title-gold">🥗 ROYAL NUTRITION BLUEPRINT (MIFFLIN-ST JEOR)</div>
+        <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 4px; margin-bottom: 1rem;">
+          Precision macro and hydration targets calculated from metabolic basal rates.
+        </div>
+        
+        <div class="telemetry-grid">
+          <div class="telemetry-box">
+            <div class="telemetry-label">BASAL METABOLIC RATE</div>
+            <div class="telemetry-val" id="valBmr">1,720 kcal</div>
+          </div>
+          <div class="telemetry-box">
+            <div class="telemetry-label">TOTAL ENERGY (TDEE)</div>
+            <div class="telemetry-val" id="valTdee">2,450 kcal</div>
+          </div>
+          <div class="telemetry-box">
+            <div class="telemetry-label">TARGET DAILY CALORIES</div>
+            <div class="telemetry-val" id="valTargetCal" style="color: var(--gold-light);">2,850 kcal</div>
+          </div>
+          <div class="telemetry-box">
+            <div class="telemetry-label">HYDRATION INTAKE</div>
+            <div class="telemetry-val" id="valWater" style="color: var(--gold-light);">3.4 L / Day</div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.2rem; margin-top: 1.4rem;">
+          <div style="background: var(--bg-secondary); border: 1px solid var(--border-gold-subtle); border-radius: 10px; padding: 14px; text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--gold-primary); font-family: 'Cinzel', serif; letter-spacing: 1px;">PROTEIN (4 KCAL/G)</div>
+            <div style="font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: 900; color: var(--gold-light);" id="macroProtein">180g</div>
+          </div>
+          <div style="background: var(--bg-secondary); border: 1px solid var(--border-gold-subtle); border-radius: 10px; padding: 14px; text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--gold-primary); font-family: 'Cinzel', serif; letter-spacing: 1px;">CARBS (4 KCAL/G)</div>
+            <div style="font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: 900; color: var(--gold-light);" id="macroCarbs">320g</div>
+          </div>
+          <div style="background: var(--bg-secondary); border: 1px solid var(--border-gold-subtle); border-radius: 10px; padding: 14px; text-align: center;">
+            <div style="font-size: 0.75rem; color: var(--gold-primary); font-family: 'Cinzel', serif; letter-spacing: 1px;">FATS (9 KCAL/G)</div>
+            <div style="font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: 900; color: var(--gold-light);" id="macroFats">75g</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1-Day Sample Meal Plan -->
+      <div class="luxury-card">
+        <div class="card-title card-title-gold">🍽️ DYNAMIC 1-DAY LUXURY MEAL BLUEPRINT</div>
+        <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.2rem;">
+          Tailored daily nutrition schedule for: <strong id="planDietLabel" style="color: var(--gold-light);">High Protein</strong>.
+        </div>
+
+        <div class="meals-grid" id="mealsContainer">
+          <!-- Meals dynamically injected -->
+        </div>
+      </div>
+
+      <!-- Interactive Food & Calorie Tracker -->
+      <div class="luxury-card">
+        <div class="card-title card-title-gold">📝 DAILY FOOD INTAKE TRACKER</div>
+        
+        <div style="display: flex; gap: 12px; margin-bottom: 1.4rem; flex-wrap: wrap;">
+          <input type="text" id="foodNameInput" class="cyber-input" placeholder="Food item (e.g., Grass-Fed Filet Mignon)" style="flex: 2; min-width: 220px;">
+          <input type="number" id="foodCalInput" class="cyber-input" placeholder="Calories" style="flex: 1; min-width: 110px;">
+          <input type="number" id="foodProtInput" class="cyber-input" placeholder="Protein (g)" style="flex: 1; min-width: 110px;">
+          <button class="cyber-btn" onclick="addFoodItem()">+ LOG INTAKE</button>
+        </div>
+
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 8px;">
+            <span>CALORIES CONSUMED: <strong id="calConsumedText" style="color: var(--gold-light);">0</strong> / <span id="calTargetText">2,850</span> kcal</span>
+            <span id="calRemainingPercent" style="color: var(--gold-light); font-weight: 700;">0%</span>
+          </div>
+          <div class="gold-track" style="margin-bottom: 1.2rem;">
+            <div class="gold-fill" id="calConsumedBar" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <div id="foodLogList">
+          <!-- Logged items rendered here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- TAB 4: USER PROFILE & BIOMETRIC SETUP                   -->
+    <!-- ======================================================= -->
+    <div class="tab-content" id="tab-profile">
+      <div class="luxury-card glow-gold">
+        <div class="card-title card-title-gold">👤 GLADIATOR IDENTITY & BIOMETRIC SETUP</div>
+        <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.8rem;">
+          Configure body metrics for metabolic computations and kinematic AI tracking calibration.
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>GLADIATOR FULL NAME</label>
+            <input type="text" id="profName" class="cyber-input" value="Alex Mercer">
+          </div>
+          <div class="form-group">
+            <label>AGE</label>
+            <input type="number" id="profAge" class="cyber-input" value="26">
+          </div>
+          <div class="form-group">
+            <label>BIOLOGICAL GENDER</label>
+            <select id="profGender" class="cyber-select">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>WEIGHT (KG)</label>
+            <input type="number" id="profWeight" class="cyber-input" value="74">
+          </div>
+          <div class="form-group">
+            <label>HEIGHT (CM)</label>
+            <input type="number" id="profHeight" class="cyber-input" value="178">
+          </div>
+          <div class="form-group">
+            <label>PRIMARY FITNESS GOAL</label>
+            <select id="profGoal" class="cyber-select">
+              <option value="muscle_gain">Muscle Mass Gain (+400 kcal surplus)</option>
+              <option value="fat_loss">Fat Loss (-500 kcal deficit)</option>
+              <option value="endurance">Endurance & Stamina (High Carb)</option>
+              <option value="maintenance">Body Maintenance</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>ACTIVITY LEVEL</label>
+            <select id="profActivity" class="cyber-select">
+              <option value="sedentary">Sedentary (Desk Job, 1.2x)</option>
+              <option value="light">Lightly Active (1-3 days/wk, 1.375x)</option>
+              <option value="moderate" selected>Moderately Active (3-5 days/wk, 1.55x)</option>
+              <option value="very_active">Very Active (6-7 days/wk, 1.725x)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>DIETARY PREFERENCE</label>
+            <select id="profDiet" class="cyber-select">
+              <option value="high_protein" selected>High Protein (1.8g - 2.2g/kg)</option>
+              <option value="balanced">Balanced Macro Split</option>
+              <option value="keto">Keto / Low Carb</option>
+              <option value="vegetarian">Vegetarian</option>
+              <option value="vegan">Vegan</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <button class="cyber-btn" onclick="saveUserProfile()">💾 SAVE & UPDATE METRICS</button>
+          <button class="cyber-btn btn-secondary" onclick="resetAllLocalStorage()">⚠️ RESET ALL SAVED DATA</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Audio Synthesizer (Harmonious Golden Bell Chime) -->
+  <script>
+    const AudioEngine = {
+      ctx: null,
+      init() {
+        if (!this.ctx) {
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+      },
+      playRepChime() {
+        try {
+          this.init();
+          const osc = this.ctx.createOscillator();
+          const oscHarmonic = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'sine';
+          oscHarmonic.type = 'triangle';
+
+          // Golden Bell Chime frequencies (D5 + F#5 + A5 triad)
+          osc.frequency.setValueAtTime(587.33, this.ctx.currentTime); // D5
+          osc.frequency.exponentialRampToValueAtTime(880.00, this.ctx.currentTime + 0.15); // A5
+          oscHarmonic.frequency.setValueAtTime(739.99, this.ctx.currentTime); // F#5
+
+          gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.005, this.ctx.currentTime + 0.35);
+
+          osc.connect(gain);
+          oscHarmonic.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start();
+          oscHarmonic.start();
+          osc.stop(this.ctx.currentTime + 0.35);
+          oscHarmonic.stop(this.ctx.currentTime + 0.35);
+        } catch(e) {}
+      }
+    };
+  </script>
+
+  <!-- Application Controller & State Engine -->
+  <script>
+    const AppState = {
+      profile: {
+        name: 'Alex Mercer',
+        age: 26,
+        gender: 'male',
+        weight: 74,
+        height: 178,
+        goal: 'muscle_gain',
+        activity: 'moderate',
+        diet: 'high_protein',
+        streakDays: 7,
+      },
+      stats: {
+        level: 1,
+        xp: 0,
+        squats: 0,
+        pushups: 0,
+        jacks: 0,
+        calories: 0,
+      },
+      foodLog: [],
+      load() {
+        const p = localStorage.getItem('fitforge_profile_luxury');
+        if (p) this.profile = JSON.parse(p);
+        const s = localStorage.getItem('fitforge_stats_luxury');
+        if (s) this.stats = JSON.parse(s);
+        const f = localStorage.getItem('fitforge_foodlog_luxury');
+        if (f) this.foodLog = JSON.parse(f);
+      },
+      save() {
+        localStorage.setItem('fitforge_profile_luxury', JSON.stringify(this.profile));
+        localStorage.setItem('fitforge_stats_luxury', JSON.stringify(this.stats));
+        localStorage.setItem('fitforge_foodlog_luxury', JSON.stringify(this.foodLog));
+      }
+    };
+
+    AppState.load();
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.add('active');
+      document.getElementById('tabBtn-' + tabId).classList.add('active');
+    }
+
+    // Biometrics & Nutrition Calculations (Mifflin-St Jeor)
+    function calculateNutrition() {
+      const p = AppState.profile;
+      let bmr = (10 * p.weight) + (6.25 * p.height) - (5 * p.age);
+      bmr += (p.gender === 'male' ? 5 : -161);
+
+      let activityMult = 1.2;
+      if (p.activity === 'light') activityMult = 1.375;
+      else if (p.activity === 'moderate') activityMult = 1.55;
+      else if (p.activity === 'very_active') activityMult = 1.725;
+
+      const tdee = Math.round(bmr * activityMult);
+      let targetCal = tdee;
+      if (p.goal === 'muscle_gain') targetCal += 400;
+      else if (p.goal === 'fat_loss') targetCal -= 500;
+
+      let proteinGrams = Math.round(p.weight * (p.goal === 'muscle_gain' ? 2.2 : 1.8));
+      let fatGrams = Math.round((targetCal * 0.25) / 9);
+      let carbGrams = Math.round((targetCal - (proteinGrams * 4) - (fatGrams * 9)) / 4);
+      let waterLiters = (p.weight * 0.035 + (p.activity !== 'sedentary' ? 0.7 : 0)).toFixed(1);
+
+      document.getElementById('valBmr').textContent = Math.round(bmr).toLocaleString() + ' kcal';
+      document.getElementById('valTdee').textContent = tdee.toLocaleString() + ' kcal';
+      document.getElementById('valTargetCal').textContent = targetCal.toLocaleString() + ' kcal';
+      document.getElementById('valWater').textContent = waterLiters + ' L / Day';
+
+      document.getElementById('macroProtein').textContent = proteinGrams + 'g';
+      document.getElementById('macroCarbs').textContent = carbGrams + 'g';
+      document.getElementById('macroFats').textContent = fatGrams + 'g';
+      document.getElementById('calTargetText').textContent = targetCal.toLocaleString();
+
+      generateMealPlan(p.diet, targetCal, proteinGrams);
+      updateFoodLogUI(targetCal);
+    }
+
+    function generateMealPlan(diet, targetCal, targetProtein) {
+      document.getElementById('planDietLabel').textContent = diet.replace('_', ' ').toUpperCase();
+      const container = document.getElementById('mealsContainer');
+      container.innerHTML = '';
+
+      const meals = [
+        {
+          type: 'BREAKFAST',
+          name: diet === 'vegan' ? 'Tofu Scramble & Avocado Sourdough' : 'Organic Egg Omelet & Steel-Cut Oats with Berries',
+          cal: Math.round(targetCal * 0.28),
+          p: Math.round(targetProtein * 0.25),
+          c: 55,
+          f: 18
+        },
+        {
+          type: 'LUNCH',
+          name: diet === 'vegan' ? 'Tempeh Quinoa & Roasted Veggie Bowl' : 'Grilled Chicken Breast, Tricolor Quinoa & Asparagus',
+          cal: Math.round(targetCal * 0.35),
+          p: Math.round(targetProtein * 0.38),
+          c: 65,
+          f: 22
+        },
+        {
+          type: 'AFTERNOON NOURISHMENT',
+          name: diet === 'keto' ? 'Almond Butter & High-Fat Greek Yogurt' : 'Whey Protein Isolate & Greek Yogurt Parfait',
+          cal: Math.round(targetCal * 0.12),
+          p: Math.round(targetProtein * 0.15),
+          c: 18,
+          f: 6
+        },
+        {
+          type: 'DINNER',
+          name: diet === 'vegan' ? 'Lentil Sweet Potato & Coconut Curry' : 'Wild Alaskan Salmon Fillet, Roasted Sweet Potato & Broccolini',
+          cal: Math.round(targetCal * 0.25),
+          p: Math.round(targetProtein * 0.22),
+          c: 45,
+          f: 20
+        }
+      ];
+
+      meals.forEach(m => {
+        const card = document.createElement('div');
+        card.className = 'meal-card';
+        card.innerHTML = `
+          <div class="meal-type">${m.type}</div>
+          <div class="meal-name">${m.name}</div>
+          <div class="meal-macros">
+            <span>🔥 ${m.cal} kcal</span>
+            <span>🥩 ${m.p}g P</span>
+            <span>🌾 ${m.c}g C</span>
+            <span>🥑 ${m.f}g F</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function addFoodItem() {
+      const name = document.getElementById('foodNameInput').value.trim();
+      const cal = parseInt(document.getElementById('foodCalInput').value);
+      const prot = parseInt(document.getElementById('foodProtInput').value) || 0;
+
+      if (!name || isNaN(cal)) {
+        alert('Please specify a food item and calorie value.');
+        return;
+      }
+
+      AppState.foodLog.push({ id: Date.now(), name, cal, prot });
+      AppState.save();
+
+      document.getElementById('foodNameInput').value = '';
+      document.getElementById('foodCalInput').value = '';
+      document.getElementById('foodProtInput').value = '';
+
+      calculateNutrition();
+    }
+
+    function updateFoodLogUI(targetCal) {
+      const list = document.getElementById('foodLogList');
+      list.innerHTML = '';
+
+      let totalCal = 0;
+      AppState.foodLog.forEach((item, index) => {
+        totalCal += item.cal;
+        const row = document.createElement('div');
+        row.className = 'food-tracker-item';
+        row.innerHTML = `
+          <span><strong>${item.name}</strong> (${item.prot}g protein)</span>
+          <span>${item.cal} kcal <button style="background:none; border:none; color:var(--red-accent); cursor:pointer; margin-left:8px;" onclick="removeFoodItem(${index})">✕</button></span>
+        `;
+        list.appendChild(row);
+      });
+
+      document.getElementById('calConsumedText').textContent = totalCal.toLocaleString();
+      const pct = Math.min(100, Math.round((totalCal / targetCal) * 100));
+      document.getElementById('calConsumedBar').style.width = pct + '%';
+      document.getElementById('calRemainingPercent').textContent = pct + '%';
+    }
+
+    function removeFoodItem(index) {
+      AppState.foodLog.splice(index, 1);
+      AppState.save();
+      calculateNutrition();
+    }
+
+    function saveUserProfile() {
+      AppState.profile = {
+        name: document.getElementById('profName').value.trim() || 'Alex Mercer',
+        age: parseInt(document.getElementById('profAge').value) || 26,
+        gender: document.getElementById('profGender').value,
+        weight: parseFloat(document.getElementById('profWeight').value) || 74,
+        height: parseFloat(document.getElementById('profHeight').value) || 178,
+        goal: document.getElementById('profGoal').value,
+        activity: document.getElementById('profActivity').value,
+        diet: document.getElementById('profDiet').value,
+        streakDays: AppState.profile.streakDays || 7,
+      };
+      AppState.save();
+      syncProfileUI();
+      calculateNutrition();
+      alert('Gladiator Profile Saved Successfully.');
+    }
+
+    function syncProfileUI() {
+      const p = AppState.profile;
+      document.getElementById('profName').value = p.name;
+      document.getElementById('profAge').value = p.age;
+      document.getElementById('profGender').value = p.gender;
+      document.getElementById('profWeight').value = p.weight;
+      document.getElementById('profHeight').value = p.height;
+      document.getElementById('profGoal').value = p.goal;
+      document.getElementById('profActivity').value = p.activity;
+      document.getElementById('profDiet').value = p.diet;
+
+      document.getElementById('dashUsername').textContent = p.name;
+      document.getElementById('dashGoal').textContent = 'Primary Protocol: ' + p.goal.replace('_', ' ').toUpperCase();
+      document.getElementById('headerStreak').textContent = p.streakDays || 7;
+
+      document.getElementById('statSquats').textContent = AppState.stats.squats;
+      document.getElementById('statPushups').textContent = AppState.stats.pushups;
+      document.getElementById('statJacks').textContent = AppState.stats.jacks;
+      document.getElementById('statCalories').textContent = AppState.stats.calories + ' kcal';
+
+      const xp = AppState.stats.xp;
+      const level = Math.floor(xp / 300) + 1;
+      AppState.stats.level = level;
+
+      document.getElementById('headerLevel').textContent = level;
+      document.getElementById('headerXp').textContent = xp;
+      document.getElementById('dashCurrentXp').textContent = xp % 300;
+      document.getElementById('dashNextXp').textContent = 300;
+      document.getElementById('dashXpBar').style.width = ((xp % 300) / 300 * 100) + '%';
+      document.getElementById('dashRank').textContent = `LEVEL ${level} // FORGE TITAN`;
+    }
+
+    function resetAllLocalStorage() {
+      if (confirm('Reset all user profile, workout, and diet records to default?')) {
+        localStorage.clear();
+        location.reload();
+      }
+    }
+  </script>
+
+  <!-- MediaPipe Pose Vector Calculation & Motion Tracking Engine -->
+  <script>
+    let camera = null;
+    let pose = null;
+    let isCameraRunning = false;
+    let currentExercise = 'squat';
+
+    let isDownPhase = false;
+    let repCount = 0;
+    let sessionXp = 0;
+    let sessionSeconds = 0;
+    let sessionTimerInterval = null;
+
+    const videoElement = document.getElementById('webcam');
+    const canvasElement = document.getElementById('poseCanvas');
+    const cameraContainer = document.getElementById('cameraContainer');
+    const canvasCtx = canvasElement.getContext('2d');
+
+    function calculateAngle(a, b, c) {
+      if (!a || !b || !c) return 180;
+      const radians = Math.atan2(c.y - b.y, c.x - b.x) - Math.atan2(a.y - b.y, a.x - b.x);
+      let angle = Math.abs((radians * 180.0) / Math.PI);
+      if (angle > 180.0) angle = 360 - angle;
+      return Math.round(angle);
+    }
+
+    function initMediaPipePose() {
+      pose = new Pose({
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
+      });
+
+      pose.setOptions({
+        modelComplexity: 1,
+        smoothLandmarks: true,
+        enableSegmentation: false,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+      });
+
+      pose.onResults(onPoseResults);
+    }
+
+    function onPoseResults(results) {
+      canvasElement.width = videoElement.videoWidth || 640;
+      canvasElement.height = videoElement.videoHeight || 480;
+
+      canvasCtx.save();
+      canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+
+      if (!results.poseLandmarks) {
+        document.getElementById('feedbackHud').textContent = 'CALIBRATING KINEMATIC SENSORS...';
+        document.getElementById('feedbackHud').className = 'hud-feedback';
+        canvasCtx.restore();
+        return;
+      }
+
+      const landmarks = results.poseLandmarks;
+      drawCyberSkeleton(landmarks);
+
+      if (currentExercise === 'squat') {
+        evaluateSquat(landmarks);
+      } else if (currentExercise === 'pushup') {
+        evaluatePushup(landmarks);
+      } else if (currentExercise === 'jumping_jack') {
+        evaluateJumpingJack(landmarks);
+      }
+
+      canvasCtx.restore();
+    }
+
+    function evaluateSquat(landmarks) {
+      const hip = landmarks[24] || landmarks[23];
+      const knee = landmarks[26] || landmarks[25];
+      const ankle = landmarks[28] || landmarks[27];
+
+      const angle = calculateAngle(hip, knee, ankle);
+      document.getElementById('angleHud').textContent = `KNEE ANGLE: ${angle}°`;
+
+      const depthPct = Math.min(100, Math.max(0, Math.round(((160 - angle) / (160 - 90)) * 100)));
+      document.getElementById('depthPercent').textContent = depthPct + '%';
+      document.getElementById('depthBar').style.width = depthPct + '%';
+
+      const fb = document.getElementById('feedbackHud');
+
+      if (!isDownPhase) {
+        if (angle <= 95) {
+          isDownPhase = true;
+          document.getElementById('stateHud').textContent = 'STATE: DOWN (FLEXION)';
+          document.getElementById('stateHud').style.color = '#f5d78a';
+          fb.textContent = '👑 PERFECT DEPTH! ASCEND TO LOCKOUT';
+          fb.className = 'hud-feedback emerald';
+        } else {
+          document.getElementById('stateHud').textContent = 'STATE: DESCENDING';
+          fb.textContent = 'SQUAT LOWER... BREAK 95° PARALLEL';
+          fb.className = 'hud-feedback';
+        }
+      } else {
+        if (angle >= 160) {
+          isDownPhase = false;
+          triggerRepSuccess();
+          fb.textContent = '✨ SQUAT REP RECORDED! +50 XP';
+          fb.className = 'hud-feedback emerald';
+        } else {
+          fb.textContent = 'DRIVE UPWARD TO FULL LOCKOUT';
+        }
+      }
+    }
+
+    function evaluatePushup(landmarks) {
+      const shoulder = landmarks[12] || landmarks[11];
+      const elbow = landmarks[14] || landmarks[13];
+      const wrist = landmarks[16] || landmarks[15];
+
+      const angle = calculateAngle(shoulder, elbow, wrist);
+      document.getElementById('angleHud').textContent = `ELBOW ANGLE: ${angle}°`;
+
+      const depthPct = Math.min(100, Math.max(0, Math.round(((160 - angle) / (160 - 85)) * 100)));
+      document.getElementById('depthPercent').textContent = depthPct + '%';
+      document.getElementById('depthBar').style.width = depthPct + '%';
+
+      const fb = document.getElementById('feedbackHud');
+
+      if (!isDownPhase) {
+        if (angle <= 85) {
+          isDownPhase = true;
+          document.getElementById('stateHud').textContent = 'STATE: CHEST LOWERED';
+          fb.textContent = '👑 CHEST TO FLOOR! PRESS FIRMLY UP';
+          fb.className = 'hud-feedback emerald';
+        } else {
+          document.getElementById('stateHud').textContent = 'STATE: LOWERING';
+          fb.textContent = 'LOWER CHEST TOWARDS FLOOR...';
+          fb.className = 'hud-feedback';
+        }
+      } else {
+        if (angle >= 155) {
+          isDownPhase = false;
+          triggerRepSuccess();
+          fb.textContent = '✨ TITAN PUSH-UP RECORDED! +50 XP';
+          fb.className = 'hud-feedback emerald';
+        }
+      }
+    }
+
+    function evaluateJumpingJack(landmarks) {
+      const leftWrist = landmarks[15];
+      const leftShoulder = landmarks[11];
+      const rightWrist = landmarks[16];
+      const rightShoulder = landmarks[12];
+
+      const handsUp = leftWrist.y < leftShoulder.y && rightWrist.y < rightShoulder.y;
+      const leftAnkle = landmarks[27];
+      const rightAnkle = landmarks[28];
+      const feetApart = Math.abs(leftAnkle.x - rightAnkle.x) > 0.35;
+
+      const fb = document.getElementById('feedbackHud');
+
+      if (!isDownPhase) {
+        if (handsUp && feetApart) {
+          isDownPhase = true;
+          document.getElementById('stateHud').textContent = 'STATE: EXPANSION';
+          fb.textContent = '👑 ARMS EXTENDED! RETURN TO NEUTRAL';
+          fb.className = 'hud-feedback emerald';
+        }
+      } else {
+        if (!handsUp && !feetApart) {
+          isDownPhase = false;
+          triggerRepSuccess();
+          fb.textContent = '✨ JACK RECORDED! +50 XP';
+          fb.className = 'hud-feedback emerald';
+        }
+      }
+    }
+
+    function triggerRepSuccess() {
+      repCount++;
+      sessionXp += 50;
+      AudioEngine.playRepChime();
+
+      // Champagne Gold ring flash effect
+      cameraContainer.classList.remove('rep-flash');
+      void cameraContainer.offsetWidth; // Trigger reflow
+      cameraContainer.classList.add('rep-flash');
+
+      document.getElementById('repCounter').textContent = repCount;
+      document.getElementById('sessionXpGained').textContent = `+${sessionXp} XP`;
+
+      if (currentExercise === 'squat') AppState.stats.squats++;
+      else if (currentExercise === 'pushup') AppState.stats.pushups++;
+      else if (currentExercise === 'jumping_jack') AppState.stats.jacks++;
+
+      AppState.stats.xp += 50;
+      AppState.stats.calories += currentExercise === 'jumping_jack' ? 6 : 5;
+      AppState.save();
+      syncProfileUI();
+    }
+
+    // Metallic Gold Vector Skeleton Overlay
+    function drawCyberSkeleton(landmarks) {
+      const connections = [
+        [11, 12], [11, 23], [12, 24], [23, 24],
+        [11, 13], [13, 15], [12, 14], [14, 16],
+        [23, 25], [25, 27], [24, 26], [26, 28]
+      ];
+
+      canvasCtx.lineWidth = 4;
+      canvasCtx.strokeStyle = '#d4af37';
+      canvasCtx.shadowColor = '#d4af37';
+      canvasCtx.shadowBlur = 12;
+
+      connections.forEach(([i, j]) => {
+        const p1 = landmarks[i];
+        const p2 = landmarks[j];
+        if (p1 && p2 && p1.visibility > 0.5 && p2.visibility > 0.5) {
+          canvasCtx.beginPath();
+          canvasCtx.moveTo(p1.x * canvasElement.width, p1.y * canvasElement.height);
+          canvasCtx.lineTo(p2.x * canvasElement.width, p2.y * canvasElement.height);
+          canvasCtx.stroke();
+        }
+      });
+
+      // Joint Nodes (Champagne Gold Highlights)
+      landmarks.forEach((p) => {
+        if (p.visibility > 0.5) {
+          canvasCtx.beginPath();
+          canvasCtx.arc(p.x * canvasElement.width, p.y * canvasElement.height, 5.5, 0, 2 * Math.PI);
+          canvasCtx.fillStyle = '#f3e5ab';
+          canvasCtx.shadowColor = '#f3e5ab';
+          canvasCtx.shadowBlur = 8;
+          canvasCtx.fill();
+        }
+      });
+    }
+
+    async function toggleCamera() {
+      const btn = document.getElementById('startCamBtn');
+
+      if (isCameraRunning) {
+        if (camera) camera.stop();
+        if (videoElement.srcObject) {
+          videoElement.srcObject.getTracks().forEach(t => t.stop());
+        }
+        isCameraRunning = false;
+        btn.textContent = 'INITIALIZE WEBCAM';
+        btn.classList.remove('btn-camera-active');
+        document.getElementById('feedbackHud').textContent = 'SENSOR FEED PAUSED';
+        return;
+      }
+
+      try {
+        AudioEngine.init();
+        if (!pose) initMediaPipePose();
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' }
+        });
+        videoElement.srcObject = stream;
+
+        camera = new Camera(videoElement, {
+          onFrame: async () => {
+            if (isCameraRunning) {
+              await pose.send({ image: videoElement });
+            }
+          },
+          width: 640,
+          height: 480
+        });
+
+        await camera.start();
+        isCameraRunning = true;
+        btn.textContent = 'DISENGAGE WEBCAM';
+        btn.classList.add('btn-camera-active');
+        document.getElementById('feedbackHud').textContent = 'CALIBRATED // COMMENCE EXERCISE';
+
+        if (!sessionTimerInterval) {
+          sessionTimerInterval = setInterval(() => {
+            sessionSeconds++;
+            const m = Math.floor(sessionSeconds / 60).toString().padStart(2, '0');
+            const s = (sessionSeconds % 60).toString().padStart(2, '0');
+            document.getElementById('sessionTimer').textContent = `${m}:${s}`;
+          }, 1000);
+        }
+      } catch (err) {
+        console.error('Camera access error:', err);
+        alert('Webcam sensor unavailable or permission denied. Simulator mode active.');
+        document.getElementById('feedbackHud').textContent = 'WEBCAM ACCESS DENIED — USE SIMULATOR';
+      }
+    }
+
+    function changeExercise(val) {
+      currentExercise = val;
+      isDownPhase = false;
+      const titleMap = {
+        squat: 'Forge Squats',
+        pushup: 'Titan Push-ups',
+        jumping_jack: 'Hyper Jumping Jacks'
+      };
+      document.getElementById('activeExerciseTitle').textContent = titleMap[val];
+      document.getElementById('feedbackHud').textContent = `SWITCHED PROTOCOL TO ${titleMap[val].toUpperCase()}`;
+    }
+
+    function runSimulatedRep() {
+      AudioEngine.init();
+      triggerRepSuccess();
+      document.getElementById('feedbackHud').textContent = '🤖 SIMULATED REP RECORDED! +50 XP';
+      document.getElementById('feedbackHud').className = 'hud-feedback emerald';
+    }
+
+    function finishExerciseSession() {
+      if (repCount === 0) {
+        alert('Complete at least 1 repetition before claiming session rewards.');
+        return;
+      }
+      alert(`👑 WORKOUT PROTOCOL CONCLUDED!\nReps: ${repCount}\nXP Gained: +${sessionXp} XP\nDuration: ${document.getElementById('sessionTimer').textContent}`);
+      repCount = 0;
+      sessionXp = 0;
+      document.getElementById('repCounter').textContent = '0';
+      document.getElementById('sessionXpGained').textContent = '+0 XP';
+      switchTab('dashboard');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      syncProfileUI();
+      calculateNutrition();
+    });
+  </script>
+</body>
+</html>

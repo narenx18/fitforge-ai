@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FitForge AI - Cyber Arena Stickman Edition</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-primary: #0a0a0c;
+      --bg-secondary: #121216;
+      --bg-card: #18181f;
+      --gold-primary: #d4af37;
+      --gold-light: #f3e5ab;
+      --gold-gradient: linear-gradient(135deg, #f5d78a 0%, #d4af37 50%, #997312 100%);
+      --cyber-green: #22c55e;
+      --cyber-red: #ef4444;
+      --text-main: #f5f5f7;
+      --border-card: rgba(255, 255, 255, 0.08);
+      --border-gold: rgba(212, 175, 55, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Nav */
+    header {
+      background: rgba(18, 18, 22, 0.9);
+      border-bottom: 1px solid var(--border-gold);
+      padding: 0.8rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.3rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: var(--gold-light);
+    }
+
+    .brand-title span {
+      color: var(--gold-primary);
+    }
+
+    .user-stats {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--gold-light);
+    }
+
+    .app-container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    /* Combat Canvas Area */
+    .arena-container {
+      background: #000000;
+      border: 1.5px solid var(--border-gold);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+    }
+
+    .arena-hud {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .fighter-hud {
+      width: 42%;
+      background: rgba(18, 18, 22, 0.85);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      padding: 10px 14px;
+      backdrop-filter: blur(8px);
+    }
+
+    .fighter-name {
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--gold-light);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .hp-bar-bg {
+      width: 100%;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .hp-bar-fill {
+      height: 100%;
+      width: 100%;
+      transition: width 0.3s ease;
+    }
+
+    .player-hp { background: linear-gradient(90deg, #10b981, #34d399); }
+    .boss-hp { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+    .vs-badge {
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #ff334b;
+      text-shadow: 0 0 10px rgba(255, 51, 75, 0.8);
+    }
+
+    canvas#fightCanvas {
+      width: 100%;
+      height: 280px;
+      display: block;
+    }
+
+    /* Move Selection Grid */
+    .moves-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 1.2rem;
+    }
+
+    .panel-header {
+      font-family: 'Cinzel', serif;
+      font-size: 0.8rem;
+      letter-spacing: 1.5px;
+      color: var(--gold-primary);
+      margin-bottom: 12px;
+    }
+
+    .moves-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+    }
+
+    .move-btn {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      padding: 10px;
+      color: var(--text-main);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .move-btn:hover {
+      border-color: var(--gold-primary);
+      background: rgba(212, 175, 55, 0.08);
+    }
+
+    .move-btn.selected {
+      border-color: var(--cyber-green);
+      background: rgba(34, 197, 94, 0.15);
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.3);
+    }
+
+    .move-name {
+      font-family: 'Cinzel', serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .move-dmg {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--gold-light);
+    }
+
+    .move-mastery {
+      font-size: 0.65rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .combat-log {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--gold-light);
+      margin-top: 10px;
+    }
+
+    /* Action Footer Controls */
+    .action-bar {
+      display: flex;
+      gap: 12px;
+    }
+
+    .cyber-btn {
+      flex: 1;
+      padding: 14px;
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-strike {
+      background: var(--cyber-green);
+      color: #000;
+    }
+
+    .btn-strike:hover {
+      background: #16a34a;
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+    }
+
+    .btn-auto {
+      background: #27272a;
+      color: #d4d4d8;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-rematch {
+      background: var(--gold-gradient);
+      color: #000;
+      display: none;
+    }
+
+    .btn-rematch.active {
+      display: block;
+      animation: pulseGlow 1.5s infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
+      50% { box-shadow: 0 0 30px rgba(212, 175, 55, 0.8); }
+    }
+
+    /* Floating Damage Text */
+    .damage-pop {
+      position: absolute;
+      font-family: 'Cinzel', serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #ff334b;
+      text-shadow: 0 0 8px rgba(255, 51, 75, 0.9);
+      pointer-events: none;
+      animation: floatUp 0.8s ease-out forwards;
+      z-index: 100;
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0) scale(0.8); }
+      50% { opacity: 1; transform: translateY(-30px) scale(1.2); }
+      100% { opacity: 0; transform: translateY(-60px) scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand-title">FITFORGE <span>AI</span></div>
+    <div class="user-stats">✪ LVL 6 // CYBER TITAN | OVERCLOCK XP</div>
+  </header>
+
+  <main class="app-container">
+
+    <!-- Stickman Arena Container -->
+    <div class="arena-container" id="arenaContainer">
+      <div class="arena-hud">
+        <div class="fighter-hud">
+          <div class="fighter-name">
+            <span>Cyber Gladiator</span>
+            <span id="playerHpText">100/100</span>
+          </div>
+          <div class="hp-bar-bg">
+            <div class="hp-bar-fill player-hp" id="playerHpBar"></div>
+          </div>
+        </div>
+
+        <div class="vs-badge">VS</div>
+
+        <div class="fighter-hud">
+          <div class="fighter-name">
+            <span>AEGIS-9</span>
+            <span id="bossHpText">100/100</span>
+          </div>
+          <div class="hp-bar-bg">
+            <div class="hp-bar-fill boss-hp" id="bossHpBar"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stickman Animation Canvas -->
+      <canvas id="fightCanvas" width="900" height="280"></canvas>
+    </div>
+
+    <!-- Moves List Panel -->
+    <div class="moves-panel">
+      <div class="panel-header">SELECT COMBAT MOVE:</div>
+      <div class="moves-grid" id="movesGrid"></div>
+      <div class="combat-log" id="combatLog">⚔️ Combat initiated against AEGIS-9! Select a move or execute strike.</div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-bar">
+      <button class="cyber-btn btn-strike" id="strikeBtn" onclick="executeSelectedMove()">EXECUTE STRIKE</button>
+      <button class="cyber-btn btn-auto" id="autoBtn" onclick="toggleAutoBattle()">AUTO BATTLE</button>
+      <button class="cyber-btn btn-rematch" id="rematchBtn" onclick="resetBattle()">🔄 REMATCH</button>
+    </div>
+
+  </main>
+
+  <script>
+    // Battle State Data
+    const battle = {
+      playerHp: 100,
+      maxPlayerHp: 100,
+      bossHp: 100,
+      maxBossHp: 100,
+      selectedMove: 0,
+      isAnimating: false,
+      isAuto: false,
+      autoInterval: null,
+      gameOver: false
+    };
+
+    const moves = [
+      { name: "Iron Kick", dmg: 25, type: "kick" },
+      { name: "Titan Punch", dmg: 30, type: "punch" },
+      { name: "Thunder Stride", dmg: 32, type: "kick" },
+      { name: "Nova Burst", dmg: 35, type: "beam" },
+      { name: "Aegis Barrier", dmg: 40, type: "punch" },
+      { name: "Cyber Uppercut", dmg: 45, type: "punch" },
+      { name: "Forge Blast", dmg: 52, type: "beam" },
+      { name: "Overclock Annihilator", dmg: 70, type: "beam" }
+    ];
+
+    // Render Move Selection Buttons
+    const movesGrid = document.getElementById('movesGrid');
+    moves.forEach((move, idx) => {
+      const btn = document.createElement('div');
+      btn.className = `move-btn ${idx === 0 ? 'selected' : ''}`;
+      btn.onclick = () => selectMove(idx);
+      btn.innerHTML = `
+        <div class="move-name">${move.name}</div>
+        <div class="move-dmg">DMG: ${move.dmg}</div>
+        <div class="move-mastery">100% Mastery</div>
+      `;
+      movesGrid.appendChild(btn);
+    });
+
+    function selectMove(index) {
+      if (battle.gameOver) return;
+      battle.selectedMove = index;
+      document.querySelectorAll('.move-btn').forEach((btn, i) => {
+        btn.classList.toggle('selected', i === index);
+      });
+    }
+
+    // Canvas Stickman Engine
+    const canvas = document.getElementById('fightCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let playerPos = { x: 250, y: 200, state: 'idle' };
+    let bossPos = { x: 650, y: 200, state: 'idle' };
+    let animFrame = 0;
+    let attackProgress = 0;
+
+    function drawStickman(x, y, color, isRightFacing, state, progress = 0) {
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+
+      const dir = isRightFacing ? 1 : -1;
+      const bounce = Math.sin(animFrame * 0.1) * 3;
+
+      // Head
+      ctx.beginPath();
+      ctx.arc(x, y - 50 + bounce, 12, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Body
+      ctx.beginPath();
+      ctx.moveTo(x, y - 38 + bounce);
+      ctx.lineTo(x, y - 10);
+      ctx.stroke();
+
+      // Legs
+      ctx.beginPath();
+      ctx.moveTo(x, y - 10);
+      ctx.lineTo(x - 12 * dir, y + 30);
+      ctx.moveTo(x, y - 10);
+      ctx.lineTo(x + 12 * dir, y + 30);
+      ctx.stroke();
+
+      // Arms based on Attack State
+      ctx.beginPath();
+      if (state === 'punch') {
+        const extension = Math.sin(progress * Math.PI) * 40;
+        ctx.moveTo(x, y - 30 + bounce);
+        ctx.lineTo(x + extension * dir, y - 30 + bounce); // Extended Punch Arm
+        ctx.moveTo(x, y - 30 + bounce);
+        ctx.lineTo(x - 10 * dir, y - 10 + bounce);
+      } else if (state === 'kick') {
+        ctx.moveTo(x, y - 30 + bounce);
+        ctx.lineTo(x - 15 * dir, y - 10);
+        ctx.moveTo(x, y - 30 + bounce);
+        ctx.lineTo(x + 15 * dir, y - 10);
+
+        // Kicking Leg
+        const kickExt = Math.sin(progress * Math.PI) * 45;
+        ctx.moveTo(x, y - 10);
+        ctx.lineTo(x + kickExt * dir, y - 20);
+      } else if (state === 'hit') {
+        // Recoil pose
+        ctx.moveTo(x, y - 30);
+        ctx.lineTo(x - 20 * dir, y - 45);
+        ctx.moveTo(x, y - 30);
+        ctx.lineTo(x - 15 * dir, y - 15);
+      } else {
+        // Idle Arms
+        ctx.moveTo(x, y - 30 + bounce);
+        ctx.lineTo(x - 15 * dir, y - 10 + bounce);
+        ctx.moveTo(x, y - 30 + bounce);
+        ctx.lineTo(x + 15 * dir, y - 10 + bounce);
+      }
+      ctx.stroke();
+
+      // Beam Attack Visual Effect
+      if (state === 'beam') {
+        ctx.beginPath();
+        ctx.fillStyle = color;
+        ctx.arc(x + 20 * dir, y - 30, 8 + Math.random() * 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (progress > 0.2 && progress < 0.8) {
+          ctx.strokeStyle = '#22c55e';
+          ctx.lineWidth = 10;
+          ctx.beginPath();
+          ctx.moveTo(x + 25 * dir, y - 30);
+          ctx.lineTo(x + 350 * dir, y - 30);
+          ctx.stroke();
+        }
+      }
+
+      ctx.restore();
+    }
+
+    function renderArena() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Floor Line
+      ctx.strokeStyle = 'rgba(212, 175, 55, 0.3)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(50, 230);
+      ctx.lineTo(850, 230);
+      ctx.stroke();
+
+      animFrame++;
+
+      // Draw Stickmen
+      drawStickman(playerPos.x, playerPos.y, '#22c55e', true, playerPos.state, attackProgress);
+      drawStickman(bossPos.x, bossPos.y, '#ef4444', false, bossPos.state, attackProgress);
+
+      requestAnimationFrame(renderArena);
+    }
+    renderArena();
+
+    // Execute Selected Move Sequence
+    function executeSelectedMove() {
+      if (battle.isAnimating || battle.gameOver) return;
+
+      const move = moves[battle.selectedMove];
+      battle.isAnimating = true;
+
+      document.getElementById('combatLog').innerText = `⚔️ Cyber Gladiator uses ${move.name}!`;
+
+      // 1. Dash / Attack Animation
+      let startX = playerPos.x;
+      let targetX = move.type === 'beam' ? startX : bossPos.x - 50;
+
+      let frame = 0;
+      const totalFrames = 30;
+
+      const animInterval = setInterval(() => {
+        frame++;
+        attackProgress = frame / totalFrames;
+
+        if (frame <= 15) {
+          playerPos.x = startX + (targetX - startX) * (frame / 15);
+          playerPos.state = move.type;
+        } else {
+          playerPos.x = targetX - (targetX - startX) * ((frame - 15) / 15);
+          if (frame === 16) {
+            // Apply Damage at Impact
+            bossPos.state = 'hit';
+            applyDamage('boss', move.dmg);
+          }
+        }
+
+        if (frame >= totalFrames) {
+          clearInterval(animInterval);
+          playerPos.x = startX;
+          playerPos.state = 'idle';
+          bossPos.state = 'idle';
+          attackProgress = 0;
+
+          // Boss Counter Attack
+          if (battle.bossHp > 0) {
+            setTimeout(executeBossCounter, 400);
+          } else {
+            battle.isAnimating = false;
+          }
+        }
+      }, 20);
+    }
+
+    function executeBossCounter() {
+      document.getElementById('combatLog').innerText = `⚡ AEGIS-9 counters with Plasma Strike!`;
+
+      let startX = bossPos.x;
+      let targetX = playerPos.x + 50;
+      let frame = 0;
+
+      const counterInterval = setInterval(() => {
+        frame++;
+        attackProgress = frame / 20;
+
+        if (frame <= 10) {
+          bossPos.x = startX - (startX - targetX) * (frame / 10);
+          bossPos.state = 'punch';
+        } else {
+          bossPos.x = targetX + (startX - targetX) * ((frame - 10) / 10);
+          if (frame === 11) {
+            playerPos.state = 'hit';
+            applyDamage('player', Math.floor(Math.random() * 15) + 10);
+          }
+        }
+
+        if (frame >= 20) {
+          clearInterval(counterInterval);
+          bossPos.x = startX;
+          bossPos.state = 'idle';
+          playerPos.state = 'idle';
+          battle.isAnimating = false;
+        }
+      }, 20);
+    }
+
+    function applyDamage(target, amount) {
+      if (target === 'boss') {
+        battle.bossHp = Math.max(0, battle.bossHp - amount);
+        document.getElementById('bossHpBar').style.width = `${(battle.bossHp / battle.maxBossHp) * 100}%`;
+        document.getElementById('bossHpText').innerText = `${battle.bossHp}/${battle.maxBossHp}`;
+        spawnDamagePop('boss', amount);
+
+        if (battle.bossHp === 0) triggerEndGame(true);
+      } else {
+        battle.playerHp = Math.max(0, battle.playerHp - amount);
+        document.getElementById('playerHpBar').style.width = `${(battle.playerHp / battle.maxPlayerHp) * 100}%`;
+        document.getElementById('playerHpText').innerText = `${battle.playerHp}/${battle.maxPlayerHp}`;
+        spawnDamagePop('player', amount);
+
+        if (battle.playerHp === 0) triggerEndGame(false);
+      }
+    }
+
+    function spawnDamagePop(target, amount) {
+      const pop = document.createElement('div');
+      pop.className = 'damage-pop';
+      pop.innerText = `-${amount}`;
+
+      const container = document.getElementById('arenaContainer');
+      const rect = container.getBoundingClientRect();
+
+      pop.style.left = target === 'boss' ? `${rect.width * 0.7}px` : `${rect.width * 0.25}px`;
+      pop.style.top = `100px`;
+
+      container.appendChild(pop);
+      setTimeout(() => pop.remove(), 800);
+    }
+
+    function toggleAutoBattle() {
+      if (battle.gameOver) return;
+      battle.isAuto = !battle.isAuto;
+      const btn = document.getElementById('autoBtn');
+      
+      if (battle.isAuto) {
+        btn.innerText = "STOP AUTO";
+        btn.style.background = "#ef4444";
+        battle.autoInterval = setInterval(() => {
+          if (!battle.isAnimating && !battle.gameOver) {
+            const randomMove = Math.floor(Math.random() * moves.length);
+            selectMove(randomMove);
+            executeSelectedMove();
+          }
+        }, 1200);
+      } else {
+        btn.innerText = "AUTO BATTLE";
+        btn.style.background = "#27272a";
+        clearInterval(battle.autoInterval);
+      }
+    }
+
+    function triggerEndGame(isVictory) {
+      battle.gameOver = true;
+      if (battle.isAuto) toggleAutoBattle();
+
+      const log = document.getElementById('combatLog');
+      log.innerText = isVictory 
+        ? "🏆 VICTORY! AEGIS-9 HAS BEEN DEFEATED!" 
+        : "💀 DEFEAT! Cyber Gladiator was knocked out!";
+
+      document.getElementById('strikeBtn').style.display = 'none';
+      document.getElementById('autoBtn').style.display = 'none';
+
+      const rematchBtn = document.getElementById('rematchBtn');
+      rematchBtn.classList.add('active');
+    }
+
+    // Rematch Reset
+    function resetBattle() {
+      battle.playerHp = 100;
+      battle.bossHp = 100;
+      battle.gameOver = false;
+      battle.isAnimating = false;
+
+      document.getElementById('playerHpBar').style.width = '100%';
+      document.getElementById('bossHpBar').style.width = '100%';
+      document.getElementById('playerHpText').innerText = '100/100';
+      document.getElementById('bossHpText').innerText = '100/100';
+
+      document.getElementById('combatLog').innerText = "⚔️ Combat re-initiated! Select a move to strike.";
+      document.getElementById('strikeBtn').style.display = 'block';
+      document.getElementById('autoBtn').style.display = 'block';
+
+      const rematchBtn = document.getElementById('rematchBtn');
+      rematchBtn.classList.remove('active');
+
+      selectMove(0);
+    }
+  </script>
+</body>
+</html>
